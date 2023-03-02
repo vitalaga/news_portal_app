@@ -1,0 +1,72 @@
+from news_portal import *
+
+User.objects.create_user('Ivan')
+User.objects.create_user('Nikolay')
+
+author1 = Author.objects.create(user=User.objects.get(pk=1))
+author1
+author2 = Author.objects.create(user=User.objects.get(pk=2))
+author2
+
+cat1 = Category.objects.create(name_category='Наука')
+cat2 = Category.objects.create(name_category='Культура')
+cat3 = Category.objects.create(name_category='Спорт')
+cat4 = Category.objects.create(name_category='Hi-tech')
+
+post1 = Post.objects.create(author=Author.objects.get(pk=1),
+object_type=Post.article,
+header='Лучшие высказывания о мудрости и глупости',
+text_post = 'Счастье жизни состоит не в том, чтобы испытывать трудности и преодолеть их, а в том, чтобы не повторять свои ошибки и глупости. (автор не известен) '
+)
+post1
+
+post2 = Post.objects.create(author=Author.objects.get(pk=2),
+object_type=Post.article,
+header='Ученые напечатали 3D-объекты с помощью звука',
+text_post = 'Немецкие исследователи разработали новую технологию трехмерной печати. '
+)
+post2
+
+post3 = Post.objects.create(author=Author.objects.get(pk=1),
+object_type=Post.news,
+header='В РФ разработана стратегия развития физической культуры и спорта на ближайшие 10 лет',
+text_post = 'Стратегия представляет 11 приоритетных направлений, охватывающих как любительский, так и профессиональный спорт.'
+)
+post3
+
+post1.categories.add(cat3, cat4)
+post2.categories.add(cat1, cat2)
+post3.categories.add(cat1, cat3)
+
+com1 = Comment.objects.create(text_comment='Круто!', user=User.objects.get(pk=1), post=Post.objects.get(pk=1))
+com2 = Comment.objects.create(text_comment='Такое се...', user=User.objects.get(pk=2), post=Post.objects.get(pk=1))
+com3 = Comment.objects.create(text_comment='Неплохо', user=User.objects.get(pk=1), post=Post.objects.get(pk=2))
+com4 = Comment.objects.create(text_comment='Весьма интересно!', user=User.objects.get(pk=2), post=Post.objects.get(pk=3))
+
+post1.like()
+post1.dislike()
+post1.like()
+post1.like()
+post2.like()
+post2.like()
+post2.like()
+post2.like()
+post3.dislike()
+post3.like()
+com1.like()
+com1.like()
+com1.like()
+com2.like()
+com3.dislike()
+com4.like()
+com4.dislike()
+
+author1.update_rating()
+author2.update_rating()
+
+Author.objects.all().order_by('-author_rating').values('user__username', 'author_rating')[0]
+
+best_post = Post.objects.order_by('-post_rating').first()
+Post.objects.all().order_by('-post_rating').values('date_post', 'author__user__username', 'post_rating', 'header')[0]
+best_post.preview()
+Comment.objects.filter(post_id=best_post).values('date_comment', 'user', 'comment_rating', 'text_comment')
